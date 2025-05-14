@@ -38,7 +38,7 @@ def recognize():
         message = "✅ Real face detected"
         print(message)
 
-        THRESHOLD = 0.92
+        THRESHOLD = 0.90
         detected_name = "unknown"
 
         # Perform recognition once

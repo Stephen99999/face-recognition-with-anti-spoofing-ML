@@ -1,72 +1,96 @@
 import { useState } from "react";
 import { ChevronDown, LogOut } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import "./Dashboard.css"; // Link to external CSS
 
 const Dashboard = ({ username, onLogout }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("Dashboard");
+
+  const navItems = ["Dashboard", "Predictions", "Reports"];
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="dashboard-container">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md border-r hidden md:block">
-        <div className="px-6 py-6 border-b">
-          <h1 className="text-xl font-bold text-blue-600">HealthPredict</h1>
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <h1 className="brand-title">HealthPredict</h1>
         </div>
-        <nav className="px-6 py-4 space-y-3">
-          <p className="text-gray-500 text-sm uppercase font-semibold">Navigation</p>
-          <button className="w-full text-left text-gray-700 hover:text-blue-600 transition font-medium">
-            Dashboard
-          </button>
-          <button className="w-full text-left text-gray-700 hover:text-blue-600 transition font-medium">
-            Predictions
-          </button>
-          <button className="w-full text-left text-gray-700 hover:text-blue-600 transition font-medium">
-            Reports
-          </button>
+        <nav className="nav-menu">
+          <p className="nav-heading">Navigation</p>
+          {navItems.map((item) => (
+            <button
+              key={item}
+              onClick={() => setActiveTab(item)}
+              className={`nav-button ${
+                activeTab === item ? "active" : ""
+              }`}
+            >
+              {item}
+            </button>
+          ))}
         </nav>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      {/* Main Content */}
+      <div className="main-content">
         {/* Navbar */}
-        <header className="flex justify-between items-center px-6 py-4 bg-blue-600 text-white shadow-md">
-          <h2 className="text-2xl font-semibold">Dashboard</h2>
+        <header className="navbar">
+          <motion.h2
+            className="navbar-title"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {activeTab}
+          </motion.h2>
 
-          {/* User Dropdown */}
-          <div className="relative">
+          {/* Dropdown */}
+          <div className="user-dropdown">
             <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 text-lg focus:outline-none hover:opacity-90 transition"
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              className="user-button"
             >
               {username}
               <ChevronDown size={18} />
             </button>
 
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 bg-white text-black rounded-md shadow-lg w-44 z-10">
-                <button
-                  onClick={onLogout}
-                  className="flex items-center gap-2 px-4 py-3 w-full text-left hover:bg-gray-100 transition"
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="dropdown-menu"
                 >
-                  <LogOut size={16} /> Logout
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={onLogout}
+                    className="dropdown-item"
+                  >
+                    <LogOut size={16} /> Logout
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </header>
 
-        {/* Dashboard Content */}
-        <main className="flex-1 p-8 overflow-y-auto bg-gray-50">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl shadow p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                Welcome, {username}!
-              </h3>
-              <p className="text-gray-600">
-                This is your professional dashboard. Use the navigation menu to
-                access prediction tools, view reports, and manage your account.
-              </p>
-            </div>
-          </div>
+        {/* Dashboard Body */}
+        <main className="dashboard-body">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="dashboard-card"
+          >
+            <h3 className="dashboard-welcome">Welcome, {username}!</h3>
+            <p className="dashboard-text">
+              You are currently viewing the <strong>{activeTab}</strong> section. Use the
+              sidebar to explore prediction tools, generate reports, and manage your data
+              seamlessly.
+            </p>
+          </motion.div>
         </main>
       </div>
     </div>
