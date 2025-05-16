@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import { useState } from "react";
 import Login from "./login";
 import Dashboard from "./Dashboard";
-import AdminDashboard from "./admin";
+import AdminDashboard from "./AdminDashboard"
 
 const App = () => {
   const [user, setUser] = useState(null);

@@ -4,6 +4,7 @@ import logo from "./assets/logo.jpg";
 const AdminDashboard = () => {
   const [logImages, setLogImages] = useState([]);
   const [flaggedImages, setFlaggedImages] = useState([]);
+  const [unknownImages, setUnknownImages] = useState([]);
   const [error, setError] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -16,6 +17,7 @@ const AdminDashboard = () => {
       const data = await response.json();
       setLogImages(data.log || []);
       setFlaggedImages(data.flagged || []);
+      setUnknownImages(data.unknown|| [])
       setError("");
     } catch (err) {
       setError("❌ Error fetching images");
@@ -25,6 +27,23 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchImages();
   }, []);
+const deleteImage = async (filename, folder) => {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/api/delete-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename, folder }),
+    });
+    const result = await response.json();
+    if (result.success) {
+      fetchImages(); // Refresh the image list
+    } else {
+      setError(result.message);
+    }
+  } catch (err) {
+    setError("❌ Error deleting image");
+  }
+};
 
   return (
     <div style={styles.container}>
@@ -75,10 +94,39 @@ const AdminDashboard = () => {
                   style={styles.image}
                 />
                 <p style={styles.caption}>{image}</p>
+                <button
+                 onClick={() => deleteImage(image, "log")}
+                style={styles.deleteButton}> Delete
+                </button>
               </div>
             ))
           ) : (
             <p style={styles.placeholder}>No recognized faces yet.</p>
+          )}
+        </div>
+      </section>
+
+      {/* Unknown Images */}
+      <section style={styles.section}>
+        <h2 style={styles.sectionTitle}>👀 Unknown Faces</h2>
+        <div style={styles.imageGrid}>
+          {unknownImages.length > 0 ? (
+            unknownImages.map((image, index) => (
+              <div key={index} style={styles.imageCard}>
+                <img
+                  src={`http://127.0.0.1:5000/api/logs/unknown/${image}`}
+                  alt={`Unknown ${index}`}
+                  style={styles.image}
+                />
+                <p style={styles.caption}>{image}</p>
+                <button
+                 onClick={() => deleteImage(image, "log")}
+                style={styles.deleteButton}> Delete
+                </button>
+              </div>
+            ))
+          ) : (
+            <p style={styles.placeholder}>No Unknown faces.</p>
           )}
         </div>
       </section>
@@ -96,6 +144,10 @@ const AdminDashboard = () => {
                   style={styles.image}
                 />
                 <p style={styles.caption}>{image}</p>
+                <button
+                 onClick={() => deleteImage(image, "log")}
+                style={styles.deleteButton}> Delete
+                </button>
               </div>
             ))
           ) : (

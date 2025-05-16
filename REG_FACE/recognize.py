@@ -4,14 +4,19 @@ import pickle
 import numpy as np
 from datetime import datetime
 from spoof_test import test
+import logging
+
+logging.basicConfig(filename='recognition.log', level=logging.INFO)
 
 
 def recognize():
-    global message
     log_dir = "log"
     flagged_dir = os.path.join(log_dir, "flagged")
+    unknown_dir = os.path.join(log_dir,"unknown")
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(flagged_dir, exist_ok=True)
+    os.makedirs(unknown_dir,exist_ok=True)
+
 
     # Load models
     print("Loading models...")
@@ -73,17 +78,23 @@ def recognize():
                     detected_name = le.classes_[j]
                 else:
                     detected_name = "unknown"
+                    message = "Failed to authenticate"
 
                 text = f"{detected_name}: {max_prob * 100:.2f}%"
                 cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
                 cv2.putText(frame, text, (startX, startY - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                print(f"Recognized as {detected_name}")
-                message = "Failed to authenticate"
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                logging.info(f"Recognized: {detected_name} at {timestamp}")
 
                 # Save log image
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                log_path = os.path.join(log_dir, f"{detected_name}_{timestamp}.jpg")
-                cv2.imwrite(log_path, frame)
+                if detected_name != "unknown":
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    log_path = os.path.join(log_dir, f"{detected_name}_{timestamp}.jpg")
+                    cv2.imwrite(log_path, frame)
+                else:
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    log_path = os.path.join(unknown_dir, f"{detected_name}_{timestamp}.jpg")
+                    cv2.imwrite(log_path, frame)
 
                 break  # Exit loop after recognizing one user
 
