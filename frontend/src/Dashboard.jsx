@@ -14,7 +14,7 @@ const Dashboard = ({ username, onLogout }) => {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h1 className="brand-title">HealthPredict</h1>
+          <h1 className="brand-title">Dummy Dashboard</h1>
         </div>
         <nav className="nav-menu">
           <p className="nav-heading">Navigation</p>
