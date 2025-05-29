@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import { useState } from "react";
 import Login from "./login";
 import Dashboard from "./Dashboard";
-import AdminDashboard from "./AdminDashboard"
+import AdminDashboard from "./AdminDashboard";
+import Home from "./home";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -18,8 +19,10 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="/dashboard" element={user ? <Dashboard username={user} onLogout={handleLogout} /> : <Navigate to="/" />} />
+        <Route path="/" element={<Home />} /> {/* ✅ Home route */}
+        
+        <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/dashboard" element={user ? <Dashboard username={user} onLogout={handleLogout} /> : <Navigate to="/login" />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
